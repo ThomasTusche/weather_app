@@ -1,72 +1,77 @@
 from tkinter import *
 import http.client
 
-weatherdata = ""
 
-def get_zip_code():
+class Weather():
 
-    city = Input_Window.get()
+    def __init__(self):    
 
-    get_weather_data(city)
+        self.master = Tk()
+        self.master.geometry("300x500")
+        self.master.title("Weather App")
 
-def get_weather_data(city):
+        Label(self.master, text="Your City (e.g Cologne):").grid(row=0, pady=(100,0), padx=(20,0))
 
-    conn = http.client.HTTPSConnection("community-open-weather-map.p.rapidapi.com")
+        self.Input_Window = Entry(self.master)
 
-    headers = {
-    'x-rapidapi-host': "community-open-weather-map.p.rapidapi.com",
-    'x-rapidapi-key': ""
-    }
+        self.Input_Window.grid(row=1, column=0, padx=(20,0))
 
-    conn.request("GET", f"/weather?callback=test&units=metric&q={city}", headers=headers)
+        Button(self.master, text='Enter', command=self.get_city).grid(row=2, column=0, padx=(20,0), pady=(10,0))
 
-    res = conn.getresponse()
-    data = res.read()
+        self.Output_Window = Text(self.master, height=9, width=30)
+        self.Output_Window.grid(row=3, column=0, pady=(30,0), padx=(20,0))
 
-    format_weather(data.decode("utf-8"))
-    
-def format_weather(weather_data):
+        self.Output_Window.insert(END, "")
 
-    global weatherdata
-
-    weather = list(weather_data.split(","))
-
-    clouds = weather[4].split(":")[1]
-    temp = weather[7].split('p":')[1]
-    feels_like = weather[8].split('":')[1]
-    temp_min = weather[9].split('":')[1]
-    temp_max = weather[10].split('":')[1]
-    pressure = weather[11].split('":')[1]
-    humidity = weather[12].split('":')[1][:-1]
-    wind = weather[14].split('ed":')[1]
-
-    weatherdata = f"Clouds: {clouds}\nTemp: {temp} °C\nFeels like: {feels_like} °C\nTemp Min: {temp_min} °C\nTemp Max: {temp_max} °C\nPressure: {pressure} Pa\nHumidity: {humidity} %\nWind: {wind} km/h"
-
-    print(weatherdata)
+        self.master.mainloop()
 
 
-master = Tk()
-master.geometry("300x500")
-master.title("Weather App")
+    def get_city(self):
 
-Label(master, text="Your City (e.g Cologne):").grid(row=0, pady=(100,0), padx=(20,0))
+        city = self.Input_Window.get()
 
-Input_Window = Entry(master)
+        self.get_weather_data(city)
 
-Input_Window.grid(row=1, column=0, padx=(20,0))
+    def get_weather_data(self,city):
 
-Button(master, text='Enter', command=get_zip_code).grid(row=2, column=0, padx=(20,0), pady=(10,0))
+        conn = http.client.HTTPSConnection("community-open-weather-map.p.rapidapi.com")
 
-Output_Window = Text(master, height=9, width=30)
-Output_Window.grid(row=3, column=0, pady=(30,0), padx=(20,0))
+        headers = {
+        'x-rapidapi-host': "community-open-weather-map.p.rapidapi.com",
+        'x-rapidapi-key': "YOUR API KEY"
+        }
 
-Output_Window.insert(END, f"{weatherdata}")
+        conn.request("GET", f"/weather?callback=test&units=metric&q={city}", headers=headers)
 
+        res = conn.getresponse()
+        data = res.read()
 
+        self.format_weather(data.decode("utf-8"))
+        
+    def format_weather(self, weatherdata):
 
+        weather = list(weatherdata.split(","))
 
-master.mainloop()
+        clouds = weather[4].split(":")[1]
+        temp = weather[7].split('p":')[1]
+        feels_like = weather[8].split('":')[1]
+        temp_min = weather[9].split('":')[1]
+        temp_max = weather[10].split('":')[1]
+        pressure = weather[11].split('":')[1]
+        humidity = weather[12].split('":')[1][:-1]
+        wind = weather[14].split('ed":')[1]
 
+        weatherdata = f"Clouds: {clouds}\nTemp: {temp} °C\nFeels like: {feels_like} °C\nTemp Min: {temp_min} °C\nTemp Max: {temp_max} °C\nPressure: {pressure} Pa\nHumidity: {humidity} %\nWind: {wind} km/h"
+
+        #print(weatherdata)
+
+        
+
+        self.Output_Window.delete('1.0', END)
+
+        self.Output_Window.insert(END, weatherdata)
+
+Weather()
 
 
 
