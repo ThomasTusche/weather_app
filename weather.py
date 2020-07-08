@@ -9,6 +9,7 @@ class Weather():
         self.master = Tk()
         self.master.geometry("300x500")
         self.master.title("Weather App")
+        self.master.iconphoto(False, PhotoImage(file='./logo.png'))
 
         Label(self.master, text="Your City (e.g Cologne):").grid(row=0, pady=(100,0), padx=(20,0))
 
